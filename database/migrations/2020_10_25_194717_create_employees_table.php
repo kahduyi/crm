@@ -19,7 +19,7 @@ class CreateEmployeesTable extends Migration
             $table->string('lastname')->nullable();
             $table->string('password')->nullable();
             $table->string('mobile', 13)->unique()->nullable();
-            $table->string('PersonnelCode', 10)->unique();
+            $table->string('PersonnelCode', 9)->unique();
             $table->string('email')->nullable();
             $table->string('position');
             $table->boolean('isAdmin')->nullable();
@@ -27,9 +27,10 @@ class CreateEmployeesTable extends Migration
             $table->boolean('active')->default(true);
             $table->timestamp('verified_at')->nullable();
             $table->timestamp('dateBirth')->nullable();
-            $table->string('user_code',6)->nullable();
+            $table->string('verify_code',6)->nullable();
             $table->string('ip')->nullable();
-            $table->unsignedBigInteger('organization_id');
+            $table->string('website')->nullable();
+            $table->unsignedBigInteger('organization_id')->nullable();
 
             $table->timestamps();
 

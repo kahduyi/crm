@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Models;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,11 +14,15 @@ class Employee extends Authenticatable
     protected $guard = 'employee';
 
     protected $fillable = [
-        'name', 'lastname', 'mobile', 'email', 'position', 'isAdmin',
-        'avatar', 'activated', 'active', 'verified_at', 'dateBirth', 'user_code', 'ip',
+        'name', 'lastname', 'mobile', 'PersonnelCode', 'email', 'position', 'isAdmin',
+        'avatar', 'active', 'verified_at', 'dateBirth', 'verify_code', 'ip','website',
     ];
 
     protected $hidden = [
         'password', 'remember_token',
+    ];
+
+    protected $casts = [
+        'verified_at'  => 'datetime',
     ];
 }
