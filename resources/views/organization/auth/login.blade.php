@@ -1,4 +1,4 @@
-@extends('organization.layouts.master_employee')
+@extends('organization.layouts.master_auth')
 @section('title','ورود')
 @section('css')
 @endsection
@@ -23,6 +23,7 @@
                                             {{--													<a href="https://twitter.com/" class="btn btn-twitter"><i class="fa fa-twitter fa-1x"></i></a>--}}
                                             {{--													<a href="https://www.facebook.com/" class="btn btn-facebook"><i class="fa fa-facebook fa-1x"></i></a>--}}
                                             {{--												</div>--}}
+{{--                                            <hr class="divider my-6">--}}
                                             <hr class="nav-divider my-6">
                                             <div class="input-group mb-4">
                                                 <div class="input-group-prepend">
@@ -30,7 +31,7 @@
                                                         <i class="fe fe-user"></i>
                                                     </div>
                                                 </div>
-                                                <input type="text" class="form-control" placeholder="Username">
+                                                <input type="text" class="form-control" placeholder="{{__('messages.user.Username')}}">
                                             </div>
                                             <div class="input-group mb-4">
                                                 <div class="input-group-prepend">
@@ -47,15 +48,15 @@
                                                     </button>
                                                 </div>
                                                 <div class="col-12 text-center">
-                                                    <a href="{{url('/' . $page='forgot-password-3')}}"
-                                                       class="btn btn-link box-shadow-0 px-0">{{__('messages.user.forgot-your-password?')}}</a>
+                                                    <a href=""
+                                                       class="btn btn-link box-shadow-0 px-0"></a>
                                                 </div>
                                             </div>
                                             <div class="text-center pt-4">
                                                 <div
                                                     class="font-weight-normal fs-16">{{__('messages.user.You Don\'t have an account')}}
                                                     <a class="btn-link font-weight-normal"
-                                                       href="#">{{__('messages.user.Register Here')}}</a></div>
+                                                       href="{{route('organization.auto.show.register')}}">{{__('messages.user.Register Here')}}</a></div>
                                             </div>
                                         </div>
                                     </div>

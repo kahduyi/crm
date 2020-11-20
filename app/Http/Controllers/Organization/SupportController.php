@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Organization;
 
-use App\Models\Organization;
+use App\Http\Controllers\Controller;
+use App\Models\Support;
 use Illuminate\Http\Request;
 
-class OrganizationController extends Controller
+class SupportController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +42,10 @@ class OrganizationController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Organization  $organization
+     * @param  \App\Models\Support  $support
      * @return \Illuminate\Http\Response
      */
-    public function show(Organization $organization)
+    public function show(Support $support)
     {
         //
     }
@@ -52,10 +53,10 @@ class OrganizationController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Organization  $organization
+     * @param  \App\Models\Support  $support
      * @return \Illuminate\Http\Response
      */
-    public function edit(Organization $organization)
+    public function edit(Support $support)
     {
         //
     }
@@ -64,10 +65,10 @@ class OrganizationController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Organization  $organization
+     * @param  \App\Models\Support  $support
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Organization $organization)
+    public function update(Request $request, Support $support)
     {
         //
     }
@@ -75,10 +76,10 @@ class OrganizationController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Organization  $organization
+     * @param  \App\Models\Support  $support
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Organization $organization)
+    public function destroy(Support $support)
     {
         //
     }

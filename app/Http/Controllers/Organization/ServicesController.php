@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Organization;
 
-use App\Models\Support;
+use App\Http\Controllers\Controller;
+use App\Models\Service;
 use Illuminate\Http\Request;
 
-class SupportController extends Controller
+class ServicesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +42,10 @@ class SupportController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Support  $support
+     * @param  \App\Models\Service  $services
      * @return \Illuminate\Http\Response
      */
-    public function show(Support $support)
+    public function show(Service $services)
     {
         //
     }
@@ -52,10 +53,10 @@ class SupportController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Support  $support
+     * @param  \App\Models\Service  $services
      * @return \Illuminate\Http\Response
      */
-    public function edit(Support $support)
+    public function edit(Service $services)
     {
         //
     }
@@ -64,10 +65,10 @@ class SupportController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Support  $support
+     * @param  \App\Models\Service  $services
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Support $support)
+    public function update(Request $request, Service $services)
     {
         //
     }
@@ -75,10 +76,10 @@ class SupportController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Support  $support
+     * @param  \App\Models\Service  $services
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Support $support)
+    public function destroy(Service $services)
     {
         //
     }

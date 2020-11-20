@@ -13,10 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('organization.user.login-employee');
-});
-
 /**
  *
  */
@@ -31,7 +27,5 @@ Route::get('/clear-cache', function () {
     return $exitCode;
     return 'DONE'; //Return anything
 });
-
-Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
