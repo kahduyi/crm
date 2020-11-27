@@ -19,9 +19,9 @@ class CreateEmployeesTable extends Migration
             $table->string('lastname')->nullable();
             $table->string('password')->nullable();
             $table->string('mobile', 13)->unique()->nullable();
-            $table->string('PersonnelCode', 9)->unique();
+            $table->string('personnelCode', 9)->unique();
             $table->string('email')->nullable();
-            $table->string('position');
+            $table->string('position')->nullable();
             $table->boolean('isAdmin')->nullable();
             $table->string('avatar')->nullable();
             $table->boolean('active')->default(true);

@@ -23,40 +23,64 @@
                                             {{--													<a href="https://twitter.com/" class="btn btn-twitter"><i class="fa fa-twitter fa-1x"></i></a>--}}
                                             {{--													<a href="https://www.facebook.com/" class="btn btn-facebook"><i class="fa fa-facebook fa-1x"></i></a>--}}
                                             {{--												</div>--}}
-{{--                                            <hr class="divider my-6">--}}
+                                            {{--                                            <hr class="divider my-6">--}}
                                             <hr class="nav-divider my-6">
-                                            <div class="input-group mb-4">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text">
-                                                        <i class="fe fe-user"></i>
+                                            <form action="{{route('organization.auto.show.login')}}" method="post">
+                                                @csrf
+                                                <div class="input-group mb-4">
+                                                    <div class="input-group-prepend">
+                                                        <div class="input-group-text">
+                                                            <i class="fe fe-user"></i>
+                                                        </div>
+                                                    </div>
+                                                    <input type="text" class="form-control" name="username"
+                                                           value="{{old('username')}}"
+                                                           placeholder="{{__('messages.user.Username')}}"
+                                                           autocomplete="username" autofocus>
+                                                </div>
+                                                @if ($errors->has('username'))
+                                                    <div class="alert alert-light-danger" role="alert">
+                                                        {{ $errors->first('username') }}
+                                                    </div>
+                                                @endif
+                                                @if (session()->has('status') && session()->pull('status') == "undefinedLogin")
+                                                    <div class="alert alert-light-danger" role="alert">
+                                                        {{session()->pull('username')}}
+                                                    </div>
+                                                @endif
+                                                <div class="input-group mb-4">
+                                                    <div class="input-group-prepend">
+                                                        <div class="input-group-text">
+                                                            <i class="fe fe-lock"></i>
+                                                        </div>
+                                                    </div>
+                                                    <input type="password" class="form-control"
+                                                           placeholder="{{__('messages.user.Password')}}"
+                                                           name="password" required autocomplete="password">
+                                                </div>
+                                                @if ($errors->has('password'))
+                                                    <div class="alert alert-light-danger" role="alert">
+                                                        {{ $errors->first('password') }}
+                                                    </div>
+                                                @endif
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <button type="submit" class="btn  btn-primary btn-block px-4">
+                                                            {{__('messages.user.login')}}
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-12 text-center">
+                                                        <a href=""
+                                                           class="btn btn-link box-shadow-0 px-0"></a>
                                                     </div>
                                                 </div>
-                                                <input type="text" class="form-control" placeholder="{{__('messages.user.Username')}}">
-                                            </div>
-                                            <div class="input-group mb-4">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text">
-                                                        <i class="fe fe-lock"></i>
-                                                    </div>
-                                                </div>
-                                                <input type="password" class="form-control" placeholder="Password">
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <button type="button" class="btn  btn-primary btn-block px-4">
-                                                        {{__('messages.user.login')}}
-                                                    </button>
-                                                </div>
-                                                <div class="col-12 text-center">
-                                                    <a href=""
-                                                       class="btn btn-link box-shadow-0 px-0"></a>
-                                                </div>
-                                            </div>
+                                            </form>
                                             <div class="text-center pt-4">
                                                 <div
                                                     class="font-weight-normal fs-16">{{__('messages.user.You Don\'t have an account')}}
                                                     <a class="btn-link font-weight-normal"
-                                                       href="{{route('organization.auto.show.register')}}">{{__('messages.user.Register Here')}}</a></div>
+                                                       href="{{route('organization.auto.show.register')}}">{{__('messages.user.Register Here')}}</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

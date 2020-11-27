@@ -14,7 +14,7 @@ class Employee extends Authenticatable
     protected $guard = 'employee';
 
     protected $fillable = [
-        'name', 'lastname', 'mobile', 'PersonnelCode', 'email', 'position', 'isAdmin',
+        'name', 'lastname', 'mobile', 'personnelCode', 'email', 'password', 'position', 'isAdmin',
         'avatar', 'active', 'verified_at', 'dateBirth', 'verify_code', 'ip','website',
     ];
 

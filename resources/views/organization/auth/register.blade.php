@@ -38,7 +38,7 @@
                                                         </div>
                                                     </div>
                                                     <input type="text" name="mobile" value="{{old('mobile')}}"
-                                                           class="form-control"
+                                                           class="form-control" autofocus autocomplete="mobile"
                                                            placeholder="{{__('messages.user.Number-mobile')}}">
                                                 </div>
                                                 @if ($errors->has('mobile'))

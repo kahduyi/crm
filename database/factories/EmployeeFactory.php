@@ -26,7 +26,7 @@ class EmployeeFactory extends Factory
             'name' => $this->faker->name,
             'lastname' => $this->faker->lastName,
             'mobile' => '+989' . random_int(1111, 9999) . random_int(11111, 99999),
-            'PersonnelCode' => '333999333',
+            'personnelCode' => '333999333',
             'email' => $this->faker->unique()->safeEmail,
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'position' => 'مدیر IT',
@@ -42,13 +42,13 @@ class EmployeeFactory extends Factory
         ];
     }
 
-    public function changeFields($name, $lastname, $mobile, $PersonnelCode, $position, $isAdmin = false)
+    public function changeFields($name, $lastname, $mobile, $personnelCode, $position, $isAdmin = false)
     {
         return $this->state([
             'name' => $name,
             'lastname' => $lastname,
             'mobile' => $mobile,
-            'PersonnelCode' => $PersonnelCode,
+            'personnelCode' => $personnelCode,
             'position' => $position,
             'isAdmin' => $isAdmin,
         ]);
