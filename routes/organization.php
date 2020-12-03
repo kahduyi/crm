@@ -7,11 +7,12 @@ Route::group(['prefix' => '/test'], function () {
 
 Route::group(['prefix' => '/', 'namespace'=> 'Organization'], function () {
 
-    Route::get('register', 'EmployeeController@showRegistrationForm')->name('organization.auto.show.register');
-    Route::post('register', 'EmployeeController@register')->name('organization.auto.register');
-    Route::get('login', 'EmployeeController@showLoginForm')->name('organization.auto.show.login');
-    Route::post('login', 'EmployeeController@login')->name('organization.auto.login');
-    Route::get('', 'EmployeeController@index');
+    Route::get('register', 'EmployeeController@showRegistrationForm')->name('organization.auth.show.register');
+    Route::post('register', 'EmployeeController@register')->name('organization.auth.register');
+    Route::get('login', 'EmployeeController@showLoginForm')->name('organization.auth.show.login');
+    Route::post('login', 'EmployeeController@login')->name('organization.auth.login');
+    Route::post('logout', 'EmployeeController@logout')->middleware('auth:employee')->name('organization.auth.logout');
+    Route::get('', 'EmployeeController@index')->middleware('auth:employee')->name('organization.index');
     Route::get('test', function () {
         return view('organization.test.alerts');
     });

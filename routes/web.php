@@ -28,4 +28,7 @@ Route::get('/clear-cache', function () {
     return 'DONE'; //Return anything
 });
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', function (){
+    return view('organization.index');
+})->name('home');

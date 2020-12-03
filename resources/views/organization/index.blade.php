@@ -3,7 +3,7 @@
 						<!--Page header-->
 						<div class="page-header">
 							<div class="page-leftheader">
-								<h4 class="page-title mb-0">Hi! Welcome Back</h4>
+								<h4 class="page-title mb-0">Hi! Welcome Back {{auth('employee')->user()->name}}</h4>
 								<ol class="breadcrumb">
 									<li class="breadcrumb-item"><a href="{{url('/' . $page='#')}}"><i class="fe fe-home ml-2 fs-14 float-right "></i>Home</a></li>
 									<li class="breadcrumb-item active" aria-current="page"><a href="{{url('/' . $page='#')}}">Sales Dashboard</a></li>

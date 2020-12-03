@@ -16,8 +16,9 @@ class CheckIfAuthenticated
      */
     public function handle(Request $request, Closure $next)
     {
+        dd("ma da CheckIfAuthenticated hastim.");
         if (!auth('employee')->check()) {
-            return redirect()->route('organize.auth.loginForm');
+            return redirect()->route('organization.auth.show.login');
         }
         return $next($request);
     }

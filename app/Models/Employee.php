@@ -7,6 +7,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property mixed name
+ * @property mixed lastname
+ */
 class Employee extends Authenticatable
 {
     use Notifiable, HasFactory;
@@ -25,4 +29,12 @@ class Employee extends Authenticatable
     protected $casts = [
         'verified_at'  => 'datetime',
     ];
+
+    /**
+     * @return string
+     */
+    public function getFullNameAttribute()
+    {
+        return $this->name . ' ' . $this->lastname;
+    }
 }

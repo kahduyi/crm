@@ -8,6 +8,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,13 +20,31 @@ use Illuminate\Validation\ValidationException;
 
 class EmployeeController extends Controller
 {
-    use RegistersUsers, AuthenticatesUsers;
+    use RegistersUsers, ThrottlesLogins;
 
-    protected $redirectTo = '/organization';
+    private $redirectTo = '/organization';
 
     public function __construct()
     {
-        $this->middleware('guest:employee')->except('logout');
+        $this->middleware('guest:employee')->except(['organization.auth.logout', 'organization.index']);
+    }
+
+    /**
+     * Used for registry and login.
+     *
+     * The value of this field is specified by the
+     * following two methods:
+     *      1) determineUsernameLogin
+     *      2) determineUsernameRegister
+     */
+    private $username;
+
+    /**
+     * @return string
+     */
+    public function username()
+    {
+        return $this->username;
     }
 
     /**
@@ -108,7 +127,7 @@ class EmployeeController extends Controller
      */
     public function register(Request $request)
     {
-        $this->validator($request->all())->validate();
+        $this->validatorRegister($request->all())->validate();
 
         $employee = $this->create($request->all());
 
@@ -146,14 +165,14 @@ class EmployeeController extends Controller
     protected function create(array $data)
     {
         do {
-            $personnelCode = $this->generate_code(9);
+            $personnelCode = $this->generateCode(9);
         } while (Employee::where('personnelCode', $personnelCode)->exists());
 
         return Employee::create([
             'mobile' => $data['mobile'],
             'password' => Hash::make($data['password']),
             'personnelCode' => $personnelCode,
-            'verify_code' => $this->generate_code(6),
+            'verify_code' => $this->generateCode(6),
             'ip' => request()->ip(),
         ]);
     }
@@ -163,7 +182,7 @@ class EmployeeController extends Controller
         return Auth::guard('employee');
     }
 
-    private function generate_code($len)
+    private function generateCode($len)
     {
         $result = '';
         for ($i = 0; $i < $len; $i++) {
@@ -178,10 +197,14 @@ class EmployeeController extends Controller
      * @param array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
+    protected function validatorRegister(array $data)
     {
+        $this->determineUsernameRegister();
         return Validator::make($data, [
-            $this->username() => ['required', 'string', 'max:20', 'regex:/^(0098|0?|\+?98)9\d{9}$/', 'unique:employees'],
+            $this->username => [
+                'required', 'string', 'max:20',
+                'regex:/^(0098|0?|\+?98)9\d{9}$/', 'unique:employees'
+            ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'agree' => ['required', 'accepted'],
         ], [], [
@@ -190,11 +213,11 @@ class EmployeeController extends Controller
     }
 
     /*
-    * Check either mobile or email.
+    * Check either mobile.
     */
-    public function username()
+    public function determineUsernameRegister()
     {
-        return 'mobile';
+        $this->username = 'mobile';
     }
 
     /**
@@ -212,41 +235,126 @@ class EmployeeController extends Controller
         /**
          * username value can be blank, mobile number, personnel number or undefined.
          */
-        $username = $this->usernameLogin();
+        $this->determineUsernameLogin();
 
-        if ($username == 'undefined')
+        if ($this->username == 'undefined')
             return back()->with([
                 'status' => 'undefinedLogin',
                 'username' => 'شماره موبایل یا شماره پرسنلی را، وارد نمایید.',
             ]);
-        $this->validateLogin($request, $username);
+        $this->validateLogin($request, $this->username);
 
-        dd($request->username . " ta inja");
-        $field = $request->has('mobile') ? 'mobile' : 'personnelCode';
-        $value = $request->input($field);
-        dd($field, $value);
+        // If the class is using the ThrottlesLogins trait, we can automatically throttle
+        // the login attempts for this application. We'll key this by the username and
+        // the IP address of the client making these requests into this application.
+        if (method_exists($this, 'hasTooManyLoginAttempts') &&
+            $this->hasTooManyLoginAttempts($request)) {
+            $this->fireLockoutEvent($request);
+
+            return $this->sendLockoutResponse($request);
+        }
+        if ($this->attemptLogin($request)) {
+            return $this->sendLoginResponse($request);
+        }
+
+        // If the login attempt was unsuccessful we will increment the number of attempts
+        // to login and redirect the user back to the login form. Of course, when this
+        // user surpasses their maximum number of attempts they will get locked out.
+        $this->incrementLoginAttempts($request);
+
+        return $this->sendFailedLoginResponse($request);
+    }
+
+    /**
+     * Attempt to log the user into the application.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return bool
+     */
+    protected function attemptLogin(Request $request)
+    {
+        return $this->guard()->attempt(
+            $this->credentials($request), $request->filled('remember')
+        );
+    }
+
+    /**
+     * Get the needed authorization credentials from the request.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return array
+     */
+    protected function credentials(Request $request)
+    {
+        return $request->only($this->username(), 'password');
+    }
+
+    /**
+     * Send the response after the user was authenticated.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    protected function sendLoginResponse(Request $request)
+    {
+        $request->session()->regenerate();
+
+        $this->clearLoginAttempts($request);
+
+        if ($response = $this->authenticated($request, $this->guard()->user())) {
+            return $response;
+        }
+        return redirect()->intended($this->redirectPath());
+        dd($this->redirectPath());
+
+        return $request->wantsJson()
+            ? new JsonResponse([], 204)
+            : redirect()->intended($this->redirectPath());
+    }
+
+    /**
+     * The user has been authenticated.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param mixed $user
+     * @return mixed
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        //
+    }
+
+    /**
+     * Get the failed login response instance.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        throw ValidationException::withMessages([
+            $this->username() => [trans('auth.failed')],
+        ]);
     }
 
     protected function validateLogin(Request $request, $username)
     {
         $this->validate(
-            $request,
-            [
-                'username' => 'required',
-            ],
-            [
+            $request, [
+            'username' => 'required',
+        ], [
                 'username.required' => __('messages.user.employee.Enter-mobile-or-personal-number'),
             ]
         );
 
         if ($username == 'mobile') {
             $this->validate(
-                $request,
-                [
-                    'username' => ['required', 'string', 'max:14', 'regex:/^(0098|0?|\+?98)9\d{9}$/'],
-                    'password' => 'required|string',
-                ],
-                [
+                $request, [
+                'username' => ['required', 'string', 'max:14', 'regex:/^(0098|0?|\+?98)9\d{9}$/'],
+                'password' => 'required|string',
+            ], [
                     "username.required" => __('messages.user.employee.Enter-the-username'),
                     'password.required' => __('messages.user.employee.Enter-the-password'),
                     'username.regex' => __('messages.user.employee.The-entered-mobile-number-has-an-inappropriate-format'),
@@ -255,12 +363,10 @@ class EmployeeController extends Controller
             );
         } else if ($username == 'personnelCode') {
             $this->validate(
-                $request,
-                [
-                    'username' => 'required|string|digits:9',
-                    'password' => 'required|string',
-                ],
-                [
+                $request, [
+                'username' => 'required|string|digits:9',
+                'password' => 'required|string',
+            ], [
                     "username.required" => __('messages.user.employee.Enter-the-username'),
                     'password.required' => __('messages.user.employee.Enter-the-password'),
                     "username.digits" => __('messages.user.employee.The-entered-personnel-number-inappropriate-format'),
@@ -273,7 +379,7 @@ class EmployeeController extends Controller
     /*
      * Check either mobile or personnelCode.
      */
-    public function usernameLogin()
+    public function determineUsernameLogin()
     {
         $value = request()->get('username');
 
@@ -286,20 +392,41 @@ class EmployeeController extends Controller
         }
 
         request()->merge([$fieldName => $value]);
-        return $fieldName;
+
+        $this->username = $fieldName;
     }
 
-    public function whicheOfUserName($username)
+    /**
+     * Log the user out of the application.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    public function logout(Request $request)
     {
-        $employee = static::where('mobile', $username)->orWhere('personnelCode', $username)->first();
-        dd($employee);
-        return $employee;
+        dd('ta inja');
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        if ($response = $this->loggedOut($request)) {
+            return $response;
+        }
+        return $request->wantsJson()
+            ? new JsonResponse([], 204)
+            : redirect()->route('organization.auth.show.login');
     }
 
-    public function findEmployByUsername($username)
+    /**
+     * The user has logged out of the application.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return mixed
+     */
+    protected function loggedOut(Request $request)
     {
-        $employee = static::where('mobile', $username)->orWhere('personnelCode', $username)->first();
-
-        return $employee;
+        //
     }
 }

@@ -15,7 +15,10 @@ return [
             'The-entered-mobile-number-has-an-inappropriate-format' => 'شماره موبایل وارد شده، دارای فرمت نامناسب می باشد!',
             'Imported-characters-too-are-allowed' => 'کاراکترهای وارد شده، بیش از حد مجاز، می باشد!',
             'The-entered-personnel-number-inappropriate-format' => 'شماره پرسنلی وارد شده، دارای فرمت نامناسب می باشد!',
-
+            'Sign-out' => 'خروج از حساب',
+            'Messages' => 'پیام‌ها',
+            'Settings' => 'تنظیمات',
+            'Profile' => 'پروفایل',
         ],
         'Register' => 'ثبت نام',
         'Number-mobile' => 'شماره موبایل',

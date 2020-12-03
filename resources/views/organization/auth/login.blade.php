@@ -25,7 +25,7 @@
                                             {{--												</div>--}}
                                             {{--                                            <hr class="divider my-6">--}}
                                             <hr class="nav-divider my-6">
-                                            <form action="{{route('organization.auto.show.login')}}" method="post">
+                                            <form action="{{route('organization.auth.show.login')}}" method="post">
                                                 @csrf
                                                 <div class="input-group mb-4">
                                                     <div class="input-group-prepend">
@@ -79,7 +79,7 @@
                                                 <div
                                                     class="font-weight-normal fs-16">{{__('messages.user.You Don\'t have an account')}}
                                                     <a class="btn-link font-weight-normal"
-                                                       href="{{route('organization.auto.show.register')}}">{{__('messages.user.Register Here')}}</a>
+                                                       href="{{route('organization.auth.show.register')}}">{{__('messages.user.Register Here')}}</a>
                                                 </div>
                                             </div>
                                         </div>
