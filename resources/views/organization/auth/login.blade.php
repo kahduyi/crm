@@ -43,11 +43,6 @@
                                                         {{ $errors->first('username') }}
                                                     </div>
                                                 @endif
-                                                @if (session()->has('status') && session()->pull('status') == "undefinedLogin")
-                                                    <div class="alert alert-light-danger" role="alert">
-                                                        {{session()->pull('username')}}
-                                                    </div>
-                                                @endif
                                                 <div class="input-group mb-4">
                                                     <div class="input-group-prepend">
                                                         <div class="input-group-text">
