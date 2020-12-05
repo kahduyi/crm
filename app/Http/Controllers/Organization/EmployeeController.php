@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
@@ -20,11 +18,12 @@ use Illuminate\Validation\ValidationException;
 
 class EmployeeController extends Controller
 {
-    use RegistersUsers, AuthenticatesUsers;
+//    use RegistersUsers, AuthenticatesUsers;
 
     public function __construct()
     {
-        $this->middleware('guest:employee')->except(['organization.auth.logout', 'organization.index']);
+        $this->middleware('guest:employee')
+            ->except(['organization.auth.logout', 'organization.index']);
     }
 
     /**
@@ -125,9 +124,10 @@ class EmployeeController extends Controller
      * @param mixed $user
      * @return mixed
      */
-    protected function registered(Request $request, $user)
+    protected function doRegister(Request $request)
     {
-        //
+        //TODO: complete registration
+        return 'do registration logic here';
     }
 
     /**

@@ -28,7 +28,7 @@ class EmployeeFactory extends Factory
             'mobile' => '+989' . random_int(1111, 9999) . random_int(11111, 99999),
             'personnelCode' => '333999333',
             'email' => $this->faker->unique()->safeEmail,
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'password' => bcrypt('123456'),
             'position' => 'مدیر IT',
             'isAdmin' => false,
             'avatar' => $this->faker->imageUrl(),
