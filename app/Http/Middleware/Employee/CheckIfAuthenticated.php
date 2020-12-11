@@ -16,10 +16,10 @@ class CheckIfAuthenticated
      */
     public function handle(Request $request, Closure $next)
     {
-        dd("ma da CheckIfAuthenticated hastim.");
         if (!auth('employee')->check()) {
             return redirect()->route('organization.auth.show.login');
         }
+//        dd("auth ta inja".auth('employee')->check());
         return $next($request);
     }
 }

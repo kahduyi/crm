@@ -24,7 +24,10 @@ class EmployeeController extends Controller
 
     public function __construct()
     {
-        $this->middleware('guest:employee')->except(['organization.auth.logout', 'organization.index']);
+        $this->middleware('guest.employee:employee', ['except' => [
+            'logout',
+            'index'
+        ]]);
     }
 
     /**
@@ -310,7 +313,6 @@ class EmployeeController extends Controller
      */
     public function logout(Request $request)
     {
-        dd('ta inja');
         $this->guard()->logout();
 
         $request->session()->invalidate();

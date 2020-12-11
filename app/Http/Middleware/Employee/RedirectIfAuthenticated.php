@@ -16,7 +16,7 @@ class RedirectIfAuthenticated
      */
     public function handle(Request $request, Closure $next)
     {
-        dd("dd(\"ma da RedirectIfAuthenticated hastim.\");");
+//        dd(redirect()->route('organization.index'));
         if (auth('employee')->check()) {
             return redirect()->route('organization.index');
         }
