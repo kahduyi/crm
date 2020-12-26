@@ -4,18 +4,23 @@ namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
+use App\Models\VerifyCode;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
+use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class EmployeeController extends Controller
@@ -26,74 +31,9 @@ class EmployeeController extends Controller
     {
         $this->middleware('guest.employee:employee', ['except' => [
             'logout',
-            'index'
+            'index',
+            'resendVerify',
         ]]);
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return view('organization.index');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 
     private $redirectTo = '/organization';
@@ -116,6 +56,16 @@ class EmployeeController extends Controller
         return $this->username;
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return view('organization.index');
+    }
+
     public function showRegistrationForm()
     {
         return view('organization.auth.register');
@@ -134,13 +84,68 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Get the post register / login redirect path.
+     * Get the post register redirect path.
+     *
+     * @return string
+     */
+    public function redirectPathForRgister()
+    {
+        return 'organization.auth.verify';
+    }
+
+    /**
+     * Get the post login redirect path.
      *
      * @return string
      */
     public function redirectPath()
     {
         return property_exists($this, 'redirectTo') ? $this->redirectTo : '/home';
+    }
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     *
+     * Initially, the user is stored in the database but is not logged in.
+     * @throws ValidationException
+     */
+    public function register(Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        $employee = Employee::where('mobile', $request->mobile)->first();
+
+        if ($employee) {
+            if ($employee->verified_at) {
+                return back()->with([
+                    'status' => 'warning',
+                    'message' => __('messages.user.This-mobileNumber-already-registered-and-not-possible-to-re-register')
+                ]);
+            }
+        } else {
+            $employee = $this->create($request->all());
+        }
+        $verifyCode = $employee->verifyCode;
+        if (!$verifyCode) {
+            $verifyCode = VerifyCode::create([
+                'employee_id' => $employee->id
+            ]);
+        }
+
+        $verifyCode->sendCode();
+
+        event(new Registered($user = $employee));
+
+        if ($response = $this->registered($request, $user)) {
+            return $response;
+        }
+
+        return $request->wantsJson()
+            ? new JsonResponse([], 201)
+            : redirect()->route($this->redirectPathForRgister(), ['mobile' => $employee->mobile]);
     }
 
     /**
@@ -155,16 +160,26 @@ class EmployeeController extends Controller
             $personnelCode = $this->generateCode(9);
         } while (Employee::where('personnelCode', $personnelCode)->exists());
 
-        //TODO ارسال پیامک
-        Log::info('SEND-REGISTER-CODE-MESSAGE-TO-USER', ['code' => '123456']);
-
         return Employee::create([
             'mobile' => $data['mobile'],
             'password' => Hash::make($data['password']),
             'personnelCode' => $personnelCode,
-            'verify_code' => $this->generateCode(6),
             'ip' => request()->ip(),
         ]);
+    }
+
+    /**
+     * Generate a six digits code
+     *
+     * @param int $codeLength
+     * @return string
+     */
+    private function generateCode($codeLength = 6)
+    {
+        $max = pow(10, $codeLength);
+        $min = $max / 10 - 1;
+        $code = mt_rand($min, $max);
+        return $code;
     }
 
     /**
@@ -175,15 +190,6 @@ class EmployeeController extends Controller
     protected function guard()
     {
         return Auth::guard('employee');
-    }
-
-    private function generateCode($len)
-    {
-        $result = '';
-        for ($i = 0; $i < $len; $i++) {
-            $result .= mt_rand(0, 9);
-        }
-        return $result;
     }
 
     /**
@@ -197,10 +203,10 @@ class EmployeeController extends Controller
         $this->determineUsernameRegister();
         return Validator::make($data, [
             $this->username() => [
-                'required', 'string', 'max:20',
-                'regex:/^(0098|0?|\+?98)9\d{9}$/', 'unique:employees'
+                'required', 'numeric',// 'max:13',
+                'regex:/^(0098|0?|\+?98)9\d{9}$/',
             ],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:' . config('auth.length_employee_password'), 'confirmed'],
             'agree' => ['required', 'accepted'],
         ], [], [
             'agree' => 'توافقنامه'
@@ -213,6 +219,106 @@ class EmployeeController extends Controller
     public function determineUsernameRegister()
     {
         $this->username = 'mobile';
+    }
+
+    public function verify($mobile)
+    {
+        return view('organization.auth.verify', compact('mobile'));
+    }
+
+    public function resendVerify(Request $request)
+    {
+//        We use this type of volition when we use Ajax.
+        dd("salam");
+        $valid = Validator::make($request->except('_token'), [
+            'mobile' => ['required', 'string', 'max:14', 'regex:/^(0098|0?|\+?98)9\d{9}$/'],
+        ], [], [
+            'mobile' => __('messages.user.There-problem-please-contact-support')
+        ]);
+        if ($valid->passes()) {
+            $employee = Employee::where('mobile', $request->mobile)->first();
+            if ($employee) {
+                if ($employee->verified_at) {
+                    return response([
+                        'status' => 'warning'
+//                        'message' => __('messages.user.This-mobileNumber-already-registered-and-not-possible-to-re-register'),
+                    ], 200);
+                }
+                $verifyCode = $employee->verifyCode;
+                if (!$verifyCode) {
+                    $verifyCode = VerifyCode::create([
+                        'employee_id' => $employee->id
+                    ]);
+                }
+            }
+
+            return response([
+                'status' => 'نقش با موفقیت، به کاربر، اضافه شد.'
+            ], 200);
+        } else {  //  data dose not validation
+            return response([
+                'errors' => $valid->errors()->all(),
+            ], 200); //I do not like 422, because I want to enter the success section of Ajax.
+        }
+    }
+
+    public function doVerify(Request $request)
+    {
+        $this->validate($request, [
+            'code' => 'required|numeric|digits:' . config('auth.length_register_verify_code'),
+            'mobile' => ['required', 'string', 'max:14', 'regex:/9\d{9}$/']
+        ], [
+            'code.*' => __('messages.user.The-submitted code-incorrect'),
+            'mobile.*' => __('messages.user.There-problem-with-registration-please-re-register-or-contact-support')
+        ]);
+
+        $employee = Employee::where('mobile', $request->mobile)->first();
+        if (!$employee) {
+            return back()->with([
+                'status' => 'error',
+                'message' => __('messages.user.There-problem-with-registration-please-re-register-or-contact-support')
+            ]);
+        }
+
+        if ($employee->verified_at) {
+            return back()->with([
+                'status' => 'warning',
+                'message' => __('messages.user.This-mobileNumber-already-registered-and-not-possible-to-re-register')
+            ]);
+        }
+
+        $verifyCode = $employee->verifyCode;
+
+//        dd($verifyCode->isUsed());
+        if ($verifyCode->isUsed())
+            return back()->with([
+                'status' => 'error',
+                'message' => __('messages.user.There-problem-with-registration-please-re-register-or-contact-support')
+            ]);
+
+        if ($verifyCode->code !== (int)$request->input('code'))
+            return back()->with([
+                'status' => 'error',
+                'message' => __('messages.user.The-submitted code-incorrect')
+            ]);
+
+        DB::beginTransaction();
+        try {
+            $verifyCode->update([
+                'used' => true
+            ]);
+            $this->guard('employee')->login($employee);
+            $employee->operationVerified();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with([
+                'status' => 'error',
+                'message' => __('messages.user.There-problem-with-registration-please-re-register-or-contact-support')
+            ]);
+        }
+        DB::commit();
+
+        return redirect()->route('organization.index');
     }
 
     /**
@@ -263,7 +369,7 @@ class EmployeeController extends Controller
             $this->validate(
                 $request, [
                 'username' => ['required', 'string', 'max:14', 'regex:/^(0098|0?|\+?98)9\d{9}$/'],
-                'password' => 'required|string|min:8',
+                'password' => 'required|string|min:' . config('auth.length_employee_password'),
             ], [
                     "username.required" => __('messages.user.employee.Enter-the-username'),
                     'password.required' => __('messages.user.employee.Enter-the-password'),
@@ -275,7 +381,7 @@ class EmployeeController extends Controller
             $this->validate(
                 $request, [
                 'username' => 'required|string|digits:9',
-                'password' => 'required|string|min:8',
+                'password' => 'required|string|min:' . config('auth.length_employee_password'),
             ], [
                     "username.required" => __('messages.user.employee.Enter-the-username'),
                     'password.required' => __('messages.user.employee.Enter-the-password'),
@@ -300,9 +406,27 @@ class EmployeeController extends Controller
             $fieldName = filter_var($value, FILTER_VALIDATE_INT) ? 'personnelCode' : 'undefined';
         }
 
+        if ($fieldName === 'mobile') {
+            $value = toValidMobileNumber($value);
+        }
         request()->merge([$fieldName => $value]);
 
         $this->username = $fieldName;
+    }
+
+    /**
+     * Get the failed login response instance.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        return redirect()->back()
+            ->withStatus('error')
+            ->withMessage(trans('auth.failed'));
     }
 
     /**

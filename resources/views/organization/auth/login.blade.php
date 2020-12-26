@@ -13,18 +13,32 @@
                                 <div class="card-group mb-0">
                                     <div class="card p-4">
                                         <div class="card-body">
-                                            <div class="text-center title-style mb-6">
+                                            <div class="text-center title-style mb-4">
                                                 <h1>{{__('messages.user.login Employee')}}</h1>
                                                 <hr class="nav-divider">
                                                 <p class="text-muted">{{__('messages.site.cloud computing Avid')}}</p>
                                             </div>
+                                            @if(session()->has('status'))
+                                                @if (session()->get('status') == "warning")
+                                                    <div class="alert alert-light-warning"
+                                                         style="margin-bottom: 0!important;" role="alert">
+                                                        {{session()->pull('message')}}
+                                                    </div>
+                                                @elseif(session()->get('status') == "error")
+                                                    <div class="alert alert-light-danger"
+                                                         style="margin-bottom: 0!important;" role="alert">
+                                                        {{session()->pull('message')}}
+                                                    </div>
+                                                @elseif(session()->pull('status') == "nothing")
+                                                @endif
+                                            @endif
                                             {{--												<div class="btn-list d-flex">--}}
                                             {{--													<a href="https://www.google.com/gmail/" class="btn btn-google btn-block"><i class="fa fa-google fa-1x mr-2"></i> Google</a>--}}
                                             {{--													<a href="https://twitter.com/" class="btn btn-twitter"><i class="fa fa-twitter fa-1x"></i></a>--}}
                                             {{--													<a href="https://www.facebook.com/" class="btn btn-facebook"><i class="fa fa-facebook fa-1x"></i></a>--}}
                                             {{--												</div>--}}
                                             {{--                                            <hr class="divider my-6">--}}
-                                            <hr class="nav-divider my-6">
+                                            <hr class="nav-divider my-4">
                                             <form action="{{route('organization.auth.show.login')}}" method="post">
                                                 @csrf
                                                 <div class="input-group mb-4">

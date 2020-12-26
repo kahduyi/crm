@@ -124,4 +124,15 @@ return [
 
     'password_timeout' => 10800,
 
+    /*
+     * Registration cache expires in minutes.
+     * 24 * 60
+     */
+    'register_cache_expiration' => env('EXPIRATION_CACHE', 1440),
+
+    /*
+     *
+     */
+    'length_register_verify_code' => env('length_verify_code', 6),
+    'length_employee_password' => env('length_employee_password', 3),
 ];

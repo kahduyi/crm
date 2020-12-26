@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 /**
  * @property mixed name
  * @property mixed lastname
+ * @property mixed verified_at
  */
 class Employee extends Authenticatable
 {
@@ -19,7 +20,7 @@ class Employee extends Authenticatable
 
     protected $fillable = [
         'name', 'lastname', 'mobile', 'personnelCode', 'email', 'password', 'position', 'isAdmin',
-        'avatar', 'active', 'verified_at', 'dateBirth', 'verify_code', 'ip','website',
+        'avatar', 'active', 'verified_at', 'dateBirth', 'ip', 'website',
     ];
 
     protected $hidden = [
@@ -27,7 +28,7 @@ class Employee extends Authenticatable
     ];
 
     protected $casts = [
-        'verified_at'  => 'datetime',
+        'verified_at' => 'datetime',
     ];
 
     /**
@@ -36,5 +37,27 @@ class Employee extends Authenticatable
     public function getFullNameAttribute()
     {
         return $this->name . ' ' . $this->lastname;
+    }
+
+    /**
+     * value of $field is mobile or email!
+     * @param $field
+     * @return bool
+     */
+    public function operationVerified()
+    {
+        $this->forceFill([
+            'verified_at' => $this->freshTimestamp(),
+        ])->save();
+    }
+
+    public function setMobileAttribute($value)
+    {
+        $this->attributes['mobile'] = toValidMobileNumber($value);
+    }
+
+    public function verifyCode()
+    {
+        return $this->hasOne(VerifyCode::class);
     }
 }

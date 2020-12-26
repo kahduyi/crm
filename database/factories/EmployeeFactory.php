@@ -35,7 +35,6 @@ class EmployeeFactory extends Factory
             'active' => true,
             'verified_at' => now(),
             'dateBirth' => $this->faker->date('Y-m-d'),
-            'verify_code' => null,
             'ip' => $this->faker->ipv4,
             'website' => $this->faker->url,
 

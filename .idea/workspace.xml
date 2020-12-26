@@ -128,7 +128,7 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/resources/views/organization/test" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/resources/views/organization/auth" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -136,8 +136,8 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\xampp\htdocs\avidi\resources\views\organization\test" />
       <recent name="C:\xampp\htdocs\avidi\resources\views\organization\auth" />
+      <recent name="C:\xampp\htdocs\avidi\resources\views\organization\test" />
       <recent name="C:\xampp\htdocs\avidi\public\assets" />
       <recent name="C:\xampp\htdocs\avidi\public" />
       <recent name="C:\xampp\htdocs\avidi\resources\lang" />
@@ -178,6 +178,11 @@
       <workItem from="1606149979191" duration="3741000" />
       <workItem from="1606246458767" duration="24648000" />
       <workItem from="1606653796317" duration="37816000" />
+      <workItem from="1608914966033" duration="901000" />
+      <workItem from="1608916987510" duration="330000" />
+      <workItem from="1608920657714" duration="105000" />
+      <workItem from="1608920803459" duration="802000" />
+      <workItem from="1608922192136" duration="8326000" />
     </task>
     <servers />
   </component>

@@ -18,6 +18,18 @@
                                                 <hr class="nav-divider">
                                                 <p class="text-muted">{{__('messages.site.cloud computing Avid')}}</p>
                                             </div>
+                                            @if(session()->has('status'))
+                                                @if (session()->get('status') == "warning")
+                                                    <div class="alert alert-light-warning" role="alert">
+                                                        {{session()->pull('message')}}
+                                                    </div>
+                                                @elseif(session()->get('status') == "error")
+                                                    <div class="alert alert-light-danger" role="alert">
+                                                        {{session()->pull('message')}}
+                                                    </div>
+                                                @elseif(session()->pull('status') == "nothing")
+                                                @endif
+                                            @endif
                                             {{--                                            <div class="btn-list d-flex">--}}
                                             {{--                                                <a href="https://www.google.com/gmail/"--}}
                                             {{--                                                   class="btn btn-google btn-block"><i--}}
@@ -77,7 +89,8 @@
                                                 @endif
                                                 <div class="form-group">
                                                     <label class="custom-control custom-checkbox">
-                                                        <input name="agree" type="checkbox" class="custom-control-input"/>
+                                                        <input name="agree" type="checkbox"
+                                                               class="custom-control-input"/>
                                                         <span class="custom-control-label"><a
                                                                 href="{{url('/' . $page='terms')}}"
                                                                 class="">{{__('messages.user.Agree-the-terms-and-policy')}}</a></span>
