@@ -32,7 +32,6 @@ class EmployeeController extends Controller
         $this->middleware('guest.employee:employee', ['except' => [
             'logout',
             'index',
-            'resendVerify',
         ]]);
     }
 
@@ -157,7 +156,7 @@ class EmployeeController extends Controller
     protected function create(array $data)
     {
         do {
-            $personnelCode = $this->generateCode(9);
+            $personnelCode = generateCode(9);
         } while (Employee::where('personnelCode', $personnelCode)->exists());
 
         return Employee::create([
@@ -166,20 +165,6 @@ class EmployeeController extends Controller
             'personnelCode' => $personnelCode,
             'ip' => request()->ip(),
         ]);
-    }
-
-    /**
-     * Generate a six digits code
-     *
-     * @param int $codeLength
-     * @return string
-     */
-    private function generateCode($codeLength = 6)
-    {
-        $max = pow(10, $codeLength);
-        $min = $max / 10 - 1;
-        $code = mt_rand($min, $max);
-        return $code;
     }
 
     /**
@@ -229,32 +214,60 @@ class EmployeeController extends Controller
     public function resendVerify(Request $request)
     {
 //        We use this type of volition when we use Ajax.
-        dd("salam");
         $valid = Validator::make($request->except('_token'), [
             'mobile' => ['required', 'string', 'max:14', 'regex:/^(0098|0?|\+?98)9\d{9}$/'],
-        ], [], [
-            'mobile' => __('messages.user.There-problem-please-contact-support')
+        ], [
+            'mobile.*' => __('messages.user.There-problem-please-contact-support')
         ]);
+
         if ($valid->passes()) {
             $employee = Employee::where('mobile', $request->mobile)->first();
             if ($employee) {
                 if ($employee->verified_at) {
+//                    dd('s',$employee->verified_at);
                     return response([
-                        'status' => 'warning'
-//                        'message' => __('messages.user.This-mobileNumber-already-registered-and-not-possible-to-re-register'),
+                        'status' => 'warning',
+                        'message' => __('messages.user.This-mobileNumber-already-registered-and-not-possible-to-re-register'),
                     ], 200);
                 }
                 $verifyCode = $employee->verifyCode;
-                if (!$verifyCode) {
+                if ($verifyCode) {
+                    $dateDiff = now()->diffInMinutes($verifyCode->updated_at);
+                    //To make changes to table fields in the database.
+                    $verifyCode->update([
+                        'used' => false,
+                    ]);
+
+                    if ($dateDiff <= config('auth.resend-the-code-after-n-minutes', 1)) {
+                        $watingTime = config('auth.resend-the-code-after-n-minutes', 1);
+                        return response([
+                            'status' => 'info',
+                            'message' => "لطفا پس از {$watingTime} دقیقه، روی دکمه ارسال مجدد کد، کلیلک نمایید.",
+                        ], 200);
+                    }
+                    if ($dateDiff > config('auth.resend_verification_code_time_diff', 60)) {
+                        //The code is generated again.
+                        $verifyCode->setCode();
+                    }
+                } else {
                     $verifyCode = VerifyCode::create([
                         'employee_id' => $employee->id
                     ]);
                 }
+                $verifyCode->sendCode();
+                return response([
+                    'status' => 'success',
+                    'message' => __('messages.user.The-code-was-sent-to-you-again'),
+                ], 200);
+            } else {
+                //employee not exist.
+                return response([
+                    'status' => 'error',
+                    'message' => __('messages.user.There-is-no-user-with-such-specifications'),
+                ], 200);
             }
 
-            return response([
-                'status' => 'نقش با موفقیت، به کاربر، اضافه شد.'
-            ], 200);
+
         } else {  //  data dose not validation
             return response([
                 'errors' => $valid->errors()->all(),

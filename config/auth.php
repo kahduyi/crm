@@ -124,15 +124,27 @@ return [
 
     'password_timeout' => 10800,
 
-    /*
+    /**
      * Registration cache expires in minutes.
      * 24 * 60
      */
     'register_cache_expiration' => env('EXPIRATION_CACHE', 1440),
 
-    /*
-     *
+    /**
+     * Verification code length, for registration operations.
      */
     'length_register_verify_code' => env('length_verify_code', 6),
+    /**
+     * Minimum password length for Employee type user
+     */
     'length_employee_password' => env('length_employee_password', 3),
+    /**
+     * Time interval to create new verification code.
+     * in minutes.
+     */
+    'resend_verification_code_time_diff' => env('RESEND_VERIFICATION_CODE_TIME_DIFF', 60),
+    /**
+     * Resubmit the code after n minutes.
+     */
+    'resend-the-code-after-n-minutes' => env('RESEND_VERIFICATION_CODE_AFTER_N_MINUTES', 1),
 ];

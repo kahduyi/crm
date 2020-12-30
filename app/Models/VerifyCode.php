@@ -27,24 +27,22 @@ class VerifyCode extends Model
     public function __construct(array $attributes = [])
     {
         if (!isset($attributes['code'])) {
-            $attributes['code'] = $this->generateCode(config('auth.length_register_verify_code'));
+            $this->setCode(false);
         }
         parent::__construct($attributes);
     }
 
     /**
-     * Generate a six digits code
-     *
-     * @param int $codeLength
-     * @return string
+     * @param bool $saveInDB
      */
-    private function generateCode($codeLength = 6)
+    public function setCode($saveInDB = true)
     {
-        $max = pow(10, $codeLength);
-        $min = $max / 10 - 1;
-        $code = mt_rand($min, $max);
-        return $code;
+        $this->code = generateCode(config('auth.length_register_verify_code'));
+        if ($saveInDB) {
+            $this->save();
+        }
     }
+
 
     public function employee()
     {

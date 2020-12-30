@@ -20,7 +20,7 @@
                 <div class="row">
                     <div class="col mx-auto">
                         <div class="row justify-content-center">
-                            <div class="col-lg-9 col-xl-8">
+                            <div class="col-lg-9 col-xl-8" id="showMessage">
                                 @if(session()->has('status'))
                                     @if (session()->get('status') == "resend")
                                         <div class="alert alert-light col-md-12" role="alert">
@@ -80,7 +80,7 @@
                                                   id="smsvrifsunmit">
                                                 @csrf
                                                 <div class="form-group">
-                                                    <input type="text" class="form-control" id="verify"
+                                                    <input type="text" class="form-control" id="code"
                                                            placeholder="کد تایید" name="code"
                                                            style="text-align: center;"
                                                            onkeyup="this.value=this.value.replace(/[^\d]/,'')">
@@ -120,10 +120,10 @@
 @section('js')
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#verify').on('input', function () {
+            $('#code').on('input', function () {
                 //TODO hard code 6
                 if (this.value.length === 6) {
-                    // console.log(this.value);
+                    console.log(this.value);
                     $('#smsvrifsunmit').submit();
                 }
             });
@@ -140,31 +140,46 @@
                     processData: false,
                     data: formData,
                     success: function (data) {
-                        console.table(data);
-                        if (data['statusss']) {
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'success',
-                                title: data['status'],
-                                showConfirmButton: false,
-                                timer: 1500
-                            })
-                        } else if (data['errors']) { //  Error
-                            console.log('salam');
-                            $('.print-error-msg').find('ul').html('');
-                            $('.print-error-msg').css('display', 'block');
-                            $.each(data['errors'], function (key, value) {
-                                $('.print-error-msg').find('ul').append('' +
-                                    '<div class="alert" role="alert" style="background-color: #f8d7da;margin-top: 1%;direction: rtl;">\n' +
-                                    '    <span  style="cursor: none;color: #721c24" class="alert-link">' + value + '.</span >\n' +
-                                    '</div>');
-                            });
+                        $('#showMessage').html('');
+                        let content = "";
+                        if (data['status']) {
+                            if (data['status'] == 'warning') {
+                                content = "<div class='alert alert-warning col-md-12' role='alert'>"
+                                    + data['message'] + "</div>";
+                            } else if (data['status'] == 'error') {
+                                content = "<div class='alert alert-danger col-md-12' role='alert'>"
+                                    + data['message'] + "</div>";
+                            } else if (data['status'] == 'success') {
+                                content = "<div class='alert alert-success col-md-12' role='alert'>"
+                                    + data['message'] + "</div>";
+                            } else if (data['status'] == 'info') {
+                                content = "<div class='alert alert-info col-md-12' role='alert'>"
+                                    + data['message'] + "</div>";
+                            }
+                        } else if (data['errors']) { //  Error in verification parameter.
+                            let content = "<div class='alert alert-danger col-md-12' role='alert'>"
+                                + data['errors'] + "</div>";
                         }
+                        $('#showMessage').append(content);
                     },
                     error: function (error) {
                     }
                 }) // end of ajax form
             }) // end of id form
         }); //  end of jquery
+        /*
+        function disableAllForms() {
+            let formSmsVerify = document.getElementById("smsvrifsunmit");
+            let elements = formSmsVerify.elements;
+            for (let i = 0, len = elements.length; i < len; ++i) {
+                elements[i].readOnly = true;
+            }
+            let form = document.getElementById("formResend");
+            elements = form.elements;
+            for (let i = 0, len = elements.length; i < len; ++i) {
+                elements[i].readOnly = true;
+            }
+        }
+         */
     </script>
 @endsection

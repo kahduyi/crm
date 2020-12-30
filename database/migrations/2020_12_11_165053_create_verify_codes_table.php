@@ -15,7 +15,7 @@ class CreateVerifyCodesTable extends Migration
     {
         Schema::create('verify_codes', function (Blueprint $table) {
             $table->id();
-            $table->integer('code');
+            $table->bigInteger('code');
             $table->boolean('used')->default(false);
             $table->bigInteger('employee_id')->unsigned();
 
