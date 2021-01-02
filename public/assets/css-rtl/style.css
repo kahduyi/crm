@@ -63,8 +63,8 @@
     font-weight: 900;
 }
 
-* {
-    font-family: 'Vazir' !important;
+*{
+    /*font-family: 'Vazir';*/
 }
 
 /* ###### bootstrap ####### */
@@ -421,7 +421,7 @@ a:active {
 .panel-heading1 a.collapsed:before {
     content: "\e9af";
     position: absolute;
-    font-family: 'Vazir', sans-serif !important;
+    font-family: 'Vazir', sans-serif;
     left: 10px;
     top: 13px;
     font-size: 20px;
@@ -432,7 +432,7 @@ a:active {
 .panel-heading1 a:before {
     content: "\e994";
     position: absolute;
-    font-family: 'Vazir', sans-serif !important;
+    font-family: 'Vazir', sans-serif;
     left: 10px;
     top: 13px;
     font-size: 20px;
@@ -14239,7 +14239,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>th:first-child:before 
 
 .page-leftheader .breadcrumb-item+.breadcrumb-item::before {
     content: "\e932";
-    font-family: Vazir !important;
+    font-family: feather !important;
     color: #1a1630;
     opacity: inherit;
     padding-right: 0;
@@ -15330,7 +15330,7 @@ div.online-status .status.online {
 /*}*/
 
 .fe {
-    font-family: 'Vazir', sans-serif !important;
+    font-family: 'Vazir', sans-serif;
     speak: none;
     font-style: normal;
     font-weight: normal;
@@ -20365,7 +20365,7 @@ section {
 
 body {
     margin: 0;
-    font-family: 'Vazir', sans-serif !important;
+    font-family: 'Vazir', sans-serif;
     font-size: 13px;
     font-weight: 400;
     line-height: 1.5;
@@ -20514,7 +20514,7 @@ pre,
 code,
 kbd,
 samp {
-    font-family: 'Vazir', sans-serif !important;
+    font-family: 'Vazir', sans-serif;
     font-size: 1em;
 }
 
@@ -20711,7 +20711,7 @@ h6,
 .h5,
 .h6 {
     margin-bottom: 0.66em;
-    font-family: 'Vazir', sans-serif !important;
+    font-family: 'Vazir', sans-serif;
     font-weight: 500;
     line-height: 1.1;
     color: inherit;
@@ -21038,7 +21038,7 @@ code,
 kbd,
 pre,
 samp {
-    font-family: 'Vazir', sans-serif !important;
+    font-family: 'Vazir', sans-serif;
 }
 
 code {
@@ -21136,12 +21136,12 @@ pre code {
 }
 
 .number-font {
-    font-family: 'Vazir', sans-serif !important;
+    font-family: 'Vazir', sans-serif;
     font-weight: 600;
 }
 
 .number-font1 {
-    font-family: 'Vazir', sans-serif !important;
+    font-family: 'Vazir', sans-serif;
 }
 
 /*----- Global Loader -----*/
@@ -29821,7 +29821,7 @@ i.fa.round {
 
 /*------- Alignments & values-------*/
 .text-monospace {
-    font-family: 'Vazir', sans-serif !important;
+    font-family: 'Vazir', sans-serif;
 }
 
 .text-justify {
@@ -34425,7 +34425,7 @@ video {
 
 .horizontalMenu>.horizontalMenu-list>li>ul.sub-menu .sub-menu-sub:after {
     content: "\e92e";
-    font-family: 'Vazir', sans-serif !important;
+    font-family: 'Vazir', sans-serif;
     font-size: 13px;
     position: absolute;
     top: 9px;

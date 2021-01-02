@@ -20,7 +20,21 @@
 		<link href="{{URL::asset('assets/plugins/p-scrollbar/p-scrollbar-rtl.css')}}" rel="stylesheet" />
 
 		<!---Icons css-->
-		<link href="{{URL::asset('assets/css-rtl/icons.css')}}" rel="stylesheet" />
+{{--		<link href="{{URL::asset('assets/iconfonts/font-awesome/css/font-awesome.css')}}" rel="stylesheet" />--}}
+		<link href="{{URL::asset('assets/iconfonts/line-awesome-1.3.0/1.3.0/css/line-awesome.min.css')}}" rel="stylesheet" />
+		<link href="{{URL::asset('assets/iconfonts/glyphicons/glyphicon.css')}}" rel="stylesheet" />
+		<link href="{{URL::asset('assets/iconfonts/ionicons/ionicons.css')}}" rel="stylesheet" />
+		<link href="{{URL::asset('assets/iconfonts/linearicons/Linearicons.css')}}" rel="stylesheet" />
+		<link href="{{URL::asset('assets/iconfonts/materialdesignicons/materialdesignicons.css')}}" rel="stylesheet" />
+		<link href="{{URL::asset('assets/iconfonts/pe-icon-7-stroke/Pe-icon-7.css')}}" rel="stylesheet" />
+		<link href="{{URL::asset('assets/iconfonts/simple-line-icons/simple-line-icons.css')}}" rel="stylesheet" />
+		<link href="{{URL::asset('assets/iconfonts/themify/themify.css')}}" rel="stylesheet" />
+		<link href="{{URL::asset('assets/iconfonts/typicons/typicons.css')}}" rel="stylesheet" />
+		<link href="{{URL::asset('assets/iconfonts/weathericons/weathericons.css')}}" rel="stylesheet" />
+		<link href="{{URL::asset('assets/iconfonts/feather/feather.css')}}" rel="stylesheet" />
+		<link href="{{URL::asset('assets/iconfonts/boxicons/boxicons.css')}}" rel="stylesheet" />
+{{--		<link href="{{URL::asset('assets/iconfonts/line-awesome/line-awesome.css')}}" rel="stylesheet" />--}}
+{{--		<link href="{{URL::asset('assets/css-rtl/icons.css')}}" rel="stylesheet" />--}}
 
 		@yield('css')
 		<!-- Simplebar css -->
